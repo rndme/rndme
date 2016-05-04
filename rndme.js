@@ -16,7 +16,7 @@ rndme.video("base92", 1024,function(s){alert(s)}, console.info.bind(console));
 // video - capture unpredictable data from user camera
 rndme.video=getRandomFromVideo;
   
-function getRandomFromVideo(format, chars, callback, progress) { // returns a 64 char base64url string
+function getRandomFromVideo(format, chars, callback, progress, err) { // returns a 64 char base64url string
 	"use strict";
 	var canvas = document.createElement("canvas"),
 		ctx = canvas.getContext("2d"),
@@ -37,7 +37,7 @@ function getRandomFromVideo(format, chars, callback, progress) { // returns a 64
 				framerate: 30, 
 				facingMode: "environment",
 			}
-		}, success, console.error.bind(console));
+		}, success, err);
 	} else if(n.webkitGetUserMedia) {
 		webkit = true;
 		n.webkitGetUserMedia({
@@ -47,7 +47,7 @@ function getRandomFromVideo(format, chars, callback, progress) { // returns a 64
 				height: H,
 				optional: []
 			}
-		}, success, console.error.bind(console));
+		}, success, err);
 	} else if(n.mozGetUserMedia) {
 		moz = true;
 		n.mozGetUserMedia({
@@ -57,7 +57,7 @@ function getRandomFromVideo(format, chars, callback, progress) { // returns a 64
 				height: H,
 			},
 			audio: false
-		}, success, console.error.bind(console));
+		}, success, err);
 	}
 
 
@@ -187,7 +187,7 @@ function getRandomFromTime(format, chars, callback, progress) {
 
 rndme.sound=sound;
 
-function sound(mode, length, callback, progress) {
+function sound(mode, length, callback, progress, err) {
 	"use strict";
 
 	var n = navigator,
@@ -209,7 +209,8 @@ function sound(mode, length, callback, progress) {
 		gum = n.getUserMedia
 
 		if(!gum) gum =  (n.mediaDevices && n.mediaDevices.getUserMedia && n.mediaDevices.getUserMedia.bind(n.mediaDevices)) || n.webkitGetUserMedia || n.mozGetUserMedia;
-
+		if(!gum) return err("sound source needs getUserMedia()");
+  
 	function makeIt() {
 
 		var resp = gum.call(n, {
@@ -226,9 +227,7 @@ function sound(mode, length, callback, progress) {
 				},
 				"optional": []
 			},
-		}, gotStream, function(e) {
-			console.error(e);
-		})
+		}, gotStream, err)
 		  if(resp && resp.then) resp.then(gotStream);
 
 	} //end makeIt()
@@ -286,7 +285,7 @@ function sound(mode, length, callback, progress) {
 				max: limit
 			});
 
-			if(!r || !r.map) return console.error("getmybuffers passed non buffer", buffers);
+			if(!r || !r.map) return err("getMyBuffers passed non buffer");
 
 			for(var i = 0, mx = r.length; i < mx; i++) {
 				var a = r[i],
@@ -351,8 +350,10 @@ function sound(mode, length, callback, progress) {
 
 rndme.motion = getRandomMotion;
 
-function getRandomMotion(format, chars, callback, progress) { // returns a long string of digits to callback
+function getRandomMotion(format, chars, callback, progress, err) { // returns a long string of digits to callback
 
+  	if(!window.ondevicemotion && !window.ondeviceorientation) err("motion source needs device motion API");
+  
 	chars = +chars || 1024;
   	
 	var samples = {},
@@ -492,8 +493,26 @@ function munge(a, b) {
 	return Math.random() > .5 ? 1 : -1;
 }
 
+  
+  function make(method){
+  
+	var func=rndme[method];
+  
+	
+	rndme[method]=function _rnd(format, size, callback, progress, err) {
+	  if(callback) return func(format, size, callback, progress, err||console.error.bind(console));
+	  return new Promise(function(resolve, reject) {
+		func(format, size, resolve, null, reject);
+	  });//end promise
+	  
+	
+  	}//end _rnd()
 
+  }//end make
+  
+ ["sound","motion","time","video"].forEach(make);
+  
 // return static class:
  return rndme;
 
-}, this));
+}, this));  
