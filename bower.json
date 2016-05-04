@@ -1,0 +1,24 @@
+{
+  "name": "rndme",
+  "description": "unpredictable number generation",
+  "main": "rndme.js",
+  "authors": [
+    "dandavis"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "prng",
+    "crypto",
+    "random",
+    "browser"
+  ],
+  "homepage": "https://github.com/rndme/rndme",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
