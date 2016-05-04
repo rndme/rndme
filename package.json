@@ -1,6 +1,6 @@
 {
   "name": "rndme",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "unpredictable number generation",
   "main": "rndme.js",
   "scripts": {
