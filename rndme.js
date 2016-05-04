@@ -6,7 +6,7 @@
 rndme.sound("bytes", 12345, function(s){alert(s)});
 rndme.motion("hex", 1024,function(s){alert(s)}, console.info.bind(console));
 rndme.time("float", 256,function(s){alert(s)}, console.info.bind(console));
-rndme.video("base92", 1024,function(s){alert(s)}, console.info.bind(console));
+rndme.video("base92", 1024).then(alert).catch(confirm);
 */
 
 
