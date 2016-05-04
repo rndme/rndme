@@ -1,0 +1,25 @@
+{
+  "name": "rndme",
+  "version": "1.0.0",
+  "description": "unpredictable number generation",
+  "main": "rndme.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rndme/rndme.git"
+  },
+  "keywords": [
+    "prng",
+    "crypto",
+    "random",
+    "browser"
+  ],
+  "author": "dandavis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rndme/rndme/issues"
+  },
+  "homepage": "https://github.com/rndme/rndme#readme"
+}
