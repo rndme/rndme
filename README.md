@@ -45,7 +45,7 @@ rndme.video("base92", 1024).then(alert).catch(confirm);
 | hex | `""` | `0-F` | hex-encoded byte values  |
 | bytes | `","` | `0-255` |  integers that fit into 1 byte  |
 | int | `""` | `0-9` | continuous digits  |
-| base64 | `""` | `\--x` | URL-safe chars |
+| base64 | `""` | `\--z` | URL-safe chars |
 | base92 | `""` | `\t-~` | JSON-safe chars  |
 | float | `","` | `0-1` |  16 digit floats |
 | raw | `","` | `0-1` | same as int, but no _limit_  |
