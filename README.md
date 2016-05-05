@@ -29,9 +29,29 @@ Time uses  a high-resolution clock and a random workload to gather numbers. Sinc
 ### Usage
 Static methods on the `rndme` variable can be used async with callbacks or promises.
 ```js
-//   source ( format  size  callback  progess ) -or- .then(callback)
+//   source ( format  limit  callback  progess ) -or- .then(callback)
 rndme.sound("bytes", 12345, function(s){alert(s)});
 rndme.motion("hex", 1024,function(s){alert(s)}, console.info.bind(console));
 rndme.time("float", 256,function(s){alert(s)}, console.info.bind(console));
 rndme.video("base92", 1024).then(alert).catch(confirm);
 ```
+
+
+
+## Formats
+
+| Format | Seperator | Range | Description |
+|----|:----:|:----:|----|
+| hex | `""` | `0-F` | hex-encoded byte values  |
+| bytes | `","` | `0-255` |  integers that fit into 1 byte  |
+| int | `""` | `0-9` | continuous digits  |
+| base64 | `""` | `\--x` | URL-safe chars |
+| base92 | `""` | `\t-~` | JSON-safe chars  |
+| float | `","` | `0-1` |  16 digit floats |
+| raw | `","` | `0-1` | same as int, but no _limit_  |
+
+
+
+
+
+
