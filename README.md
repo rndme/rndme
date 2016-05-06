@@ -4,10 +4,14 @@ unpredictable number generation
 `npm install rndme` - or - `bower install rndme`
 
 
-## Sources
+## Purpose
+
+> Easily gather numbers or text from sound, movement, video, and more.
+
+Cryptography needs un-predictable keys to ensure security. Recent revelations have cast doubt about `window.crypto`, and everyone knows `Math.random()` is useless. Existing methods of "entropy gathering" like mouse jiggling or typing are akward for users and hampered by mobile devices. With uniform access to a variety of sources, _rndme_ offers you simple and felxible creation of un-predictable and uniformly-distributed data, if you're into that sort of thing.
 
 
-
+## Input Sources
 ### Sound
 Uses `getUserMedia()` to capture numbers from a microphone. This is the fastest physical source of numbers at about 120 chars per ms. The raw samples are not only shuffled, they are cropped of the most and least signifigant digits, so there's no telling what was briefly "recorded". Use medium volume music or static for a more even distribution of output.
 
