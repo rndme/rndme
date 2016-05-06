@@ -512,6 +512,15 @@ function munge(a, b) {
   
  ["sound","motion","time","video"].forEach(make);
   
+  
+// a sync timestamp method, returns a new 10-digit string each time
+rndme.stamp= function stamp() {
+	return(Date.now() / (performance.now() * 100)).toString().split("").filter(/./.test, /\d/).slice(-10).join("");
+};
+  
+  
+  
+  
 // return static class:
  return rndme;
 
