@@ -3,6 +3,7 @@ unpredictable number generation
 
 `npm install rndme` - or - `bower install rndme`
 
+Check out [a live demo](https://pagedemos.com/rndmelibdemo/) to see what the fuss is about.
 
 ## Purpose
 
@@ -32,8 +33,22 @@ Time uses  a high-resolution clock and a random workload to gather numbers. Sinc
 Crypto uses `crypto.getRandomValues` _and_ a high-resolution clock derivative to gather numbers. This method is sync under-the-hood and is directly callable. OS-provided numbers are muliplied by a number derived from the date and a high-resolution performance timing API, then cropped in the middle to deliver un-compromised randomness. The crypto source's exact performance rate depends on CPU speed and OS-provided entropy, but easily execeds 150 chars per ms.
 
 
+## Output Formats
 
-### Usage
+| Format | Seperator | Range | Description |
+|----|:----:|:----:|----|
+| hex | `""` | `0-F` | hex-encoded byte values  |
+| bytes | `","` | `0-255` |  integers that fit into 1 byte  |
+| int | `""` | `0-9` | continuous digits  |
+| base64 | `""` | `\--z` | URL-safe chars |
+| base92 | `""` | `\t-~` | JSON-safe chars  |
+| float | `","` | `0-1` |  16 digit floats |
+| raw | `","` | `0-1` | same as int, but no _limit_  |
+
+
+
+
+## Usage
 Static methods on the `rndme` variable can be used async with callbacks or promises.
 ```js
 //   source ( format  limit  callback  progess ) -or- .then(callback)
@@ -46,17 +61,19 @@ alert(rndme.crypto("int", 1024, Boolean)); // the crypto source can be sync with
 
 
 
-## Output Formats
 
-| Format | Seperator | Range | Description |
-|----|:----:|:----:|----|
-| hex | `""` | `0-F` | hex-encoded byte values  |
-| bytes | `","` | `0-255` |  integers that fit into 1 byte  |
-| int | `""` | `0-9` | continuous digits  |
-| base64 | `""` | `\--z` | URL-safe chars |
-| base92 | `""` | `\t-~` | JSON-safe chars  |
-| float | `","` | `0-1` |  16 digit floats |
-| raw | `","` | `0-1` | same as int, but no _limit_  |
+## Static Utilities
+
+`.stamp()` - returns 10 random digits, sync, based on the current time. Using Date()s and high-resolution timingings with a chunk of slower code internally, this method should produce different output each time it's called:
+```js
+[1,2,3,4,5].map(rndme.stamp);
+// == ["1621049878", "7138172444", "5275617627", "1540339147", "2792212006"]
+```
+
+`.spin(arrToShuffle, optNumSwaps)` - re-arranges the elements in an array into an unpredictable order bu swapping values. The default is as many swaps as elements, but a 2nd argument can specify a custom number of swaps if desired. Uses `Math.random()`, so it should not be a source of sectrets, but it can help re-arrange secrets to provide a better distribution.
+
+`.munge` - An `[].sort()` callback that contrary to popular belief, does NOT randomize an array. It does slightly re-arrange the elements, and it does so quickly. It's used by _rndme_ to prevent repeated output in very low-entroy situations like a user having a broken camera and using the video input by altering the look up table of some output builders prior to each execution.
+
 
 
 
