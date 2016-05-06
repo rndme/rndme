@@ -12,6 +12,12 @@ rndme.video("base92", 1024).then(alert).catch(confirm);
 
  var rndme=Object.create(null);
 
+// a sync timestamp method, returns a new 10-digit string each time
+rndme.stamp= function stamp() {
+	return(Date.now() / (performance.now() * 100)).toString().split("").filter(/./.test, /\d/).slice(-10).join("");
+};
+  
+  
 
 // video - capture unpredictable data from user camera
 rndme.video=getRandomFromVideo;
@@ -398,7 +404,28 @@ function getRandomMotion(format, chars, callback, progress, err) { // returns a 
 }//end getRandomMotion()
 
 
+rndme.crypto=  getRandomFromCrypto;
+// crypto - OS-provided CSPRNG with timing data mixin - sync and fast
+function getRandomFromCrypto(format, chars, callback, progress) { 
 
+  var pad=(""+Array(Math.floor(chars/4.9))).split("").map(rndme.stamp),
+  out =  [].slice.call(crypto.getRandomValues(new Uint16Array(chars)));
+		
+
+		
+	 	out = out.map(function(a,b,c){
+             var padSlot=Math.floor(b/10), padCol=b%10;
+             return ("00"+(a*(+pad[padSlot][padCol]||1)).toString().slice(1,3)).slice(-2);
+        }).join("");
+
+	  	var collect=[];
+		formatData(out, format, collect);	  
+		var buff =collect.slice(-chars).join("");
+		if(callback) callback(buff);
+		return buff;
+
+} //end getRandomFromCrypto()    
+  
 
   function formatData(strData, format, dest){
 	dest=dest || [];
@@ -474,8 +501,7 @@ function getRandomMotion(format, chars, callback, progress, err) { // returns a 
   }//end formatData()
 
   
-  
-  
+
   
 //utils
 function spin(r, max) { // to unweave linearity of gathered unique samples
@@ -526,14 +552,10 @@ function make(method) {
 } //end make
 
 
-["sound","motion","time","video"].forEach(make);
+["sound","motion","time","video","crypto"].forEach(make);
   
   
-// a sync timestamp method, returns a new 10-digit string each time
-rndme.stamp= function stamp() {
-	return(Date.now() / (performance.now() * 100)).toString().split("").filter(/./.test, /\d/).slice(-10).join("");
-};
-  
+
   
   
   
