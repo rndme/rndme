@@ -494,23 +494,39 @@ function munge(a, b) {
 }
 
   
-  function make(method){
-  
-	var func=rndme[method];
-  
-	
-	rndme[method]=function _rnd(format, size, callback, progress, err) {
-	  if(callback) return func(format, size, callback, progress, err||console.error.bind(console));
-	  return new Promise(function(resolve, reject) {
-		func(format, size, resolve, null, reject);
-	  });//end promise
-	  
-	
-  	}//end _rnd()
+function make(method) {
+	var func = rndme[method];
+	rndme[method] = function _rnd(format, size, callback, progress, err) {
+		var one5 = size * 1.5,
+			osize = size;
+		size = {
+			'float': size * 8,
+			hex: one5,
+			int: Math.ceil(size / 2),
+			base64: one5,
+			bytes: one5,
+			base92: size * 1.08
+		}[format] || size;
+		var cb2 = function rndme_cb(x) {
+			var u, delim = {
+				float: ',',
+				bytes: ',',
+				base92: '',
+				int: '',
+			}[format];
+			if (delim !== u) x = x.split(delim).slice(-osize).join(delim);
+			if (callback) callback(x);
+			return x;
+		};
+		if (callback) return func(format, size, cb2, progress, err || console.error.bind(console));
+		return new Promise(function(resolve, reject) {
+			func(format, size, resolve, null, reject);
+		}).then(cb2); //end promise
+	} //end _rnd()
+} //end make
 
-  }//end make
-  
- ["sound","motion","time","video"].forEach(make);
+
+["sound","motion","time","video"].forEach(make);
   
   
 // a sync timestamp method, returns a new 10-digit string each time
