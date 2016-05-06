@@ -1,3 +1,4 @@
+
 // rndme.js - unpredictable number generation from sound, sight, movement, and time
 (function(a,b){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():b.rndme=a()}(function(){
 
@@ -18,6 +19,7 @@ rndme.video=getRandomFromVideo;
   
 function getRandomFromVideo(format, chars, callback, progress, err) { // returns a 64 char base64url string
 	"use strict";
+  chars=Math.floor(chars * 0.55);
 	var canvas = document.createElement("canvas"),
 		ctx = canvas.getContext("2d"),
 		webkit = false,
@@ -132,12 +134,12 @@ rndme.time = getRandomFromTime;
 function getRandomFromTime(format, chars, callback, progress) { 
 
 	var ua = new Uint32Array(1),
-		counts=Math.ceil(chars/2.72),
+		counts=Math.ceil(chars/5.9),
 		out = random(counts),
 		rxd = /[523403467]/,
 		limit = 0,
 		round = 0,
-		roundLimit = chars * 1.5,
+		roundLimit = chars * 0.5,
 		seeds = random(roundLimit + 3),
 		loads = random(roundLimit + 3),
 		r = [],
@@ -166,9 +168,10 @@ function getRandomFromTime(format, chars, callback, progress) {
 	  
 	  	var collect=[];
 		formatData(out.map(function(a, b, c) {
-			var l2 = ("" + a).slice(-3);
-			return (+(l2[2] + l2[1] + l2[0]) - 16 )|| ""; // toss ~16/1000 chars
+			var l2 = ("000" + a).slice(-6);
+			return (l2[5]+l2[4]+l2[3] + l2[2] + l2[1] + l2[0]) || ""; // toss ~16/1000 chars
 		}).filter(String).join("").replace(/\D+/g,""), format, collect);
+	  
 	  
 		callback(collect.slice(-chars).join(""));
 
@@ -403,7 +406,7 @@ function getRandomMotion(format, chars, callback, progress, err) { // returns a 
 rndme.crypto=  getRandomFromCrypto;
 // crypto - OS-provided CSPRNG with timing data mixin - sync and fast
 function getRandomFromCrypto(format, chars, callback, progress) { 
-
+	chars=Math.floor(chars/2);
   var pad=(""+Array(Math.floor(chars/4.9))).split("").map(rndme.stamp),
   out =  [].slice.call(crypto.getRandomValues(new Uint16Array(chars)));
 		
@@ -430,7 +433,7 @@ function getRandomFromCrypto(format, chars, callback, progress) {
 		count= 0,
 		s=strData;
 
-
+	
 	switch(format) {
 
 	  case 'hex':
@@ -479,7 +482,7 @@ function getRandomFromCrypto(format, chars, callback, progress) {
 
 	  case 'base92':
 	  default:
-
+		
 		var chars="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&()*+,-./:;<=> ?@[]^_{|}~`\t".split("").sort(munge);
 
 		var tr=(s.match(/\d{2}/g) || []), i=0, mx=tr.length, rr=Array(mx);
@@ -535,16 +538,15 @@ function make(method) {
 	var func = rndme[method];
 	rndme[method] = function _rnd(format, size, callback, progress, err) {
 		var one5 = size * 1.5,
+			three = size * 3,
 			osize = size;
 		size = {
-			'float': size * 21,
-			hex: size * 2,
-			base64: size * 2,
-			bytes: one5,
-			base92: size * 1.08
+			'float': size * 16,
+			hex: one5,
+			base64: three,
+			bytes: three,
+			base92: size * 2.2
 		}[format] || size;
-	  
-	  	if(format=="hex") osize=size;
 	  
 		var cb2 = function rndme_cb(x) {
 			var u, delim = {
