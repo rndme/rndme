@@ -12,12 +12,6 @@ rndme.video("base92", 1024).then(alert).catch(confirm);
 
  var rndme=Object.create(null);
 
-// a sync timestamp method, returns a new 10-digit string each time
-rndme.stamp= function stamp() {
-	return(Date.now() / (performance.now() * 100)).toString().split("").filter(/./.test, /\d/).slice(-10).join("");
-};
-  
-  
 
 // video - capture unpredictable data from user camera
 rndme.video=getRandomFromVideo;
@@ -521,7 +515,22 @@ function munge(a, b) {
 	return Math.random() > .5 ? 1 : -1;
 }
 
+
+
+// a sync timestamp method, returns a new 10-digit string each time
+function stamp() {
+	return(Date.now() / (performance.now() * 100)).toString().split("").filter(/./.test, /\d/).slice(-10).join("");
+};
   
+  
+  
+  
+//publish utils:
+rndme.munge=munge;  
+rndme.spin= spin;
+rndme.stamp= stamp;
+  
+    
 function make(method) {
 	var func = rndme[method];
 	rndme[method] = function _rnd(format, size, callback, progress, err) {
@@ -560,9 +569,7 @@ function make(method) {
 
 ["sound","motion","time","video","crypto"].forEach(make);
   
-  
 
-  
   
   
 // return static class:
