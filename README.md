@@ -9,7 +9,7 @@ unpredictable number generation
 
 
 ### Sound
-Uses `getUserMedia()` to capture numbers from a microphone. This is the by far fastest source of numbers at about 120 chars per ms. The raw samples are not only shuffled, they are cropped of the most and least signifigant digits, so there's no telling what was briefly "recorded". Use medium volume music or static for a more even distribution of output.
+Uses `getUserMedia()` to capture numbers from a microphone. This is the fastest physical source of numbers at about 120 chars per ms. The raw samples are not only shuffled, they are cropped of the most and least signifigant digits, so there's no telling what was briefly "recorded". Use medium volume music or static for a more even distribution of output.
 
 
 ### Video
@@ -24,6 +24,9 @@ Motion uses the device Motion API to turn physical movements into numbers. It sh
 Time uses  a high-resolution clock and a random workload to gather numbers. Since it uses a clock and rolls many workload timings into each output sample, it's rather slow compared to the others at around 0.15 chars per ms. Time has one main advantage: it works on desktop and mobile alike and doesn't need user permissions. It's great for shorter chunks of data like _salts_, _symmetric encryption keys_, and entropy for other number generators.
 
 
+### Crypto
+Crypto uses `crypto.getRandomValues` _and_ a high-resolution clock derivative to gather numbers. This method is sync under-the-hood and is directly callable. OS-provided numbers are muliplied by a number derived from the date and a high-resolution performance timing API, then cropped in the middle to deliver un-compromised randomness. The crypto source's exact performance rate depends on CPU speed and OS-provided entropy, but easily execeds 150 chars per ms.
+
 
 
 ### Usage
@@ -34,6 +37,7 @@ rndme.sound("bytes", 12345, function(s){alert(s)});
 rndme.motion("hex", 1024,function(s){alert(s)}, console.info.bind(console));
 rndme.time("float", 256,function(s){alert(s)}, console.info.bind(console));
 rndme.video("base92", 1024).then(alert).catch(confirm);
+alert(rndme.crypto("int", 1024, Boolean)); // the crypto source can be sync with a stub callback
 ```
 
 
