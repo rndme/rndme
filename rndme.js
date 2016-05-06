@@ -95,7 +95,8 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 			updateCanvas.stop();	
 		  	if(callback) callback(collect.join("")); 
 		}else{
-		  setTimeout(updateCanvas, 40);		  
+		  if(progress) progress({value: dataBuffer.length * 128, max: chars});
+		  setTimeout(updateCanvas, 0);		  
 		}
 	  
 		
@@ -165,9 +166,10 @@ function getRandomFromTime(format, chars, callback, progress) {
 		for(var i = ((loads[round] / 4294967296) * (limit / 9)) + 1; i > 0; i--) t += work();
 		var slot = Math.floor((seeds[round] / 4294967296) * 64);
 		out[slot] = out[slot] + t + (times[times.length] = +snap());
+	  	if(progress) progress({value: round, max: roundLimit});
 		if(round < roundLimit) return setTimeout(next,0);
 	
-
+	  
 	  	var collect=[];
 		formatData(out.map(function(a, b, c) {
 			var l2 = ("" + a).slice(-3);
@@ -317,8 +319,8 @@ function sound(mode, length, callback, progress, err) {
 				buffers.length = 0;
 				isRecording = false;
 				if(progress)progress({
-					value: 0,
-					max: 0
+					value: count,
+					max:limit
 				});
 
 				gotStream.ai.disconnect();
@@ -526,21 +528,25 @@ function make(method) {
 		var one5 = size * 1.5,
 			osize = size;
 		size = {
-			'float': size * 8,
-			hex: one5,
-			int: Math.ceil(size / 2),
-			base64: one5,
+			'float': size * 21,
+			hex: size * 2,
+			base64: size * 2,
 			bytes: one5,
 			base92: size * 1.08
 		}[format] || size;
+	  
+	  	if(format=="hex") osize=size;
+	  
 		var cb2 = function rndme_cb(x) {
 			var u, delim = {
 				float: ',',
 				bytes: ',',
 				base92: '',
 				int: '',
+			    hex: '',
+			  base64: '',
 			}[format];
-			if (delim !== u) x = x.split(delim).slice(-osize).join(delim);
+			if (delim !== u) x = x.split(delim).slice(-osize).join(delim.exec?"":delim);
 			if (callback) callback(x);
 			return x;
 		};
@@ -562,4 +568,4 @@ function make(method) {
 // return static class:
  return rndme;
 
-}, this));  
+}, this));
