@@ -46,7 +46,7 @@ alert(rndme.crypto("int", 1024, Boolean)); // the crypto source can be sync with
 
 
 
-## Formats
+## Output Formats
 
 | Format | Seperator | Range | Description |
 |----|:----:|:----:|----|
