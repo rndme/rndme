@@ -1,4 +1,3 @@
-
 // rndme.js - unpredictable number generation from sound, sight, movement, and time
 (function(a,b){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():b.rndme=a()}(function(){
 
@@ -406,27 +405,28 @@ function getRandomMotion(format, chars, callback, progress, err) { // returns a 
 rndme.crypto=  getRandomFromCrypto;
 // crypto - OS-provided CSPRNG with timing data mixin - sync and fast
 function getRandomFromCrypto(format, chars, callback, progress) { 
-	chars=Math.floor(chars/2);
-  var pad=(""+Array(Math.floor(chars/4.9))).split("").map(rndme.stamp),
-  out =  [].slice.call(crypto.getRandomValues(new Uint16Array(chars)));
-		
-
-		
-	 	out = out.map(function(a,b,c){
+	chars=Math.floor(chars/1.5);
+	var pad=(""+Array(Math.floor(chars/9.75))).split("").map(rndme.stamp),
+	out =  [].slice.call(crypto.getRandomValues(new Int8Array(chars)))
+	.map(Math.abs)
+	.filter(function(a,b,c){ return a<100; });
+	out = out.map(function(a,b,c){
              var padSlot=Math.floor(b/10), padCol=b%10;
-             return ("00"+(a*(+pad[padSlot][padCol]||1)).toString().slice(1,3)).slice(-2);
+             return ("00"+(a+(+pad[padSlot][padCol]||1)).toString().slice(-2)).slice(-2);
         }).join("");
 
-	  	var collect=[];
-		formatData(out, format, collect);	  
-		var buff =collect.slice(-chars).join("");
-		if(callback) callback(buff);
-		return buff;
-
+	var collect=[], buff;
+	formatData(out, format, collect);	  
+	buff =collect.slice(-chars).join("");
+	if(callback) callback(buff);
+	return buff;
 } //end getRandomFromCrypto()    
   
+  
+  
+  
 
-  function formatData(strData, format, dest){
+function formatData(strData, format, dest){
 	dest=dest || [];
 	var rxd = /\D/g,
 		rxd3 = /\d{3}/g,
@@ -438,7 +438,7 @@ function getRandomFromCrypto(format, chars, callback, progress) {
 
 	  case 'hex':
 		dest.push((s.match(rxd3) || []).map(function(a, b, c) {
-		  a = a % 255;
+		  a = ~~((a/999) * 256);
 		  count++;
 		  return("00" + a.toString(16)).slice(-2);
 		}).join(""));
