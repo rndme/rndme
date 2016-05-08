@@ -1,4 +1,4 @@
-// rndme.js - unpredictable number generation from sound, sight, movement, and time
+	// rndme.js - unpredictable number generation from sound, sight, movement, and time
 (function(a,b){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():b.rndme=a()}(function(){
 
 /* example uses:
@@ -35,7 +35,7 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 			video: {
 				width: W,
 				height: H,
-				framerate: 30, 
+				framerate: 60, 
 				facingMode: "environment",
 			}
 		}, success, err);
@@ -46,6 +46,7 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 				facingMode: "environment",
 				width: W,
 				height: H,
+			  framerate: 60, 
 				optional: []
 			}
 		}, success, err);
@@ -56,6 +57,7 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 				facingMode: "environment",
 				width: W,
 				height: H,
+			  framerate: 60, 
 			},
 			audio: false
 		}, success, err);
@@ -63,45 +65,51 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 
 
 	function dumpCanvas() {
-			var sig = crypto.getRandomValues(new Uint32Array(128)),
+		var data = ctx.getImageData(0, 0, W, H).data,
+		pSum=data.slice(0, 512).reduce(function(a,b){return a+b;}, 10),	  
+		sigLength = Math.floor(Math.max(64,Math.min(2048, (pSum-32768)/9))),
+		sig = crypto.getRandomValues(new Uint32Array(sigLength)),
 			r = [],
-			taken = 0,
-			data = ctx.getImageData(0, 0, W, H).data;
-
+			taken = 0;
 			
-		for(var i = data[1], mx = data.length; i < mx; i++) {
+	  if( pSum < 100 ) return setTimeout(updateCanvas, 20);
+	  
+		
+		for(var i = 1, mx = data.length; i < mx; i++) {
 			var v = data[i];
-			if(v > 0 && v < 255) {
-				var slot = taken++ % 64;
-				sig[slot] = (sig[slot] + v) % 255;
+			if( v < 255) {
+				sig[(sigLength-1)-(taken++ % sigLength)]+=v;
 			}
 		}
 
 		//keygen and dump:
 		sig = [].slice.call(sig).map(function(a) {
-			return parseInt("0" + a.toString(2).slice(-6), 2);
+			return ("00"+a).slice(-2);
+			  //parseInt("0" + a.toString(2).slice(-10), 2);
 		}).join("");
 
-	  	if(/^r+$/.test(sig)) return setTimeout(updateCanvas, 100);
+	  	if(/^0+$/.test(sig)) return setTimeout(updateCanvas, 20);
+	  
 	  	dataBuffer.push(sig);	  
-	  	if(dataBuffer.length * 128 > chars){
+	  	var used=(""+dataBuffer).length*0.53;
+	  
+	  	if(used > chars){
 		 	var collect=[]; 
 		  	formatData(dataBuffer.join(""), format, collect);
 			updateCanvas.stop();	
 		  	if(callback) callback(collect.join("")); 
 		}else{
-		  if(progress) progress({value: dataBuffer.length * 128, max: chars});
+		  if(progress) progress({value: used, max: chars});
 		  setTimeout(updateCanvas, 0);		  
 		}
 	  
-		
 
 	}
 
 
 	function updateCanvas() {
 		ctx.drawImage(v, 0, 0, W, H);
-		setTimeout(dumpCanvas, 34);
+		setTimeout(dumpCanvas, 25);
 	}
 
 
