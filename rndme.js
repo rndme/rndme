@@ -422,8 +422,31 @@ function getRandomFromCrypto(format, chars, callback, progress) {
 	return buff;
 } //end getRandomFromCrypto()    
   
-  
-  
+
+
+
+
+rndme.unsafe=  getRandomFromMath;
+// crypto - Browser-provided PRNG - sync, fast, uniform, and not secure
+function getRandomFromMath(format, chars, callback, progress) { 
+	chars=Math.floor(chars/1.5);
+	var out=Array(Math.floor(chars/15)).join(",").split(",").map(Math.random).join("").replace(/,?0\./g,"");
+
+	var collect=[], buff;
+	formatData(out, format, collect);	  
+	buff =collect.slice(-chars).join("");
+	if(callback) callback(buff);
+	return buff;
+} //end getRandomFromMath()     
+
+
+
+
+
+
+
+
+ 
   
 
 function formatData(strData, format, dest){
@@ -569,7 +592,7 @@ function make(method) {
 } //end make
 
 
-["sound","motion","time","video","crypto"].forEach(make);
+["sound","motion","time","video","crypto","unsafe"].forEach(make);
   
 
   
