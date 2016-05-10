@@ -141,42 +141,43 @@ rndme.time = getRandomFromTime;
 function getRandomFromTime(format, chars, callback, progress) { 
 
 	var ua = new Uint32Array(1),
-		counts=Math.ceil(chars/5.9),
-		out = random(counts),
+		counts=Math.ceil(chars/2),
+		ds=(Date.now()+performance.now()).toString().replace(/\D/g,""),
+		dsl=ds.length, 
+		out =random(counts),// Array.from(Array(counts)).map(function(a,b){return rndme.stamp().slice(b%10, (b%10)+1)*b}),
+	//.map((a,b)=>b*ds[b%dsl]),//random(counts),
 		rxd = /[523403467]/,
 		limit = 0,
 		round = 0,
-		roundLimit = chars * 0.5,
+		roundLimit = chars * 0.333, //0.7,
 		seeds = random(roundLimit + 3),
 		loads = random(roundLimit + 3),
 		r = [],
-		times = [],
 		t = (Date.now().toString().slice(-3).slice(1)*1),
 		st = performance.now();
 		
 
 	function random(n) {return [].slice.call(crypto.getRandomValues(new Uint32Array(n)));}
 	function work() {return Math.random().toString(16).split("").filter(rxd.test, rxd).length;}
-	function snap() {return String(("" + performance.now()).match(/\.\d\d/) || "0").replace(/\D/g, "").slice(-2) || 0;}
+	function snap() {return +String(("" + performance.now()).match(/\.\d\d/) || "0").replace(/\D/g, "").slice(-2).split("").reverse().join("") || 0;}
 
 
 	while(performance.now() < st + 1) t += work(limit++) ;
-	limit = Math.max(limit, 2);
+	limit = Math.max(limit*1.75, 2);
 
 	function next(){
 	
 		round++;
-		for(var i = ((loads[round] / 4294967296) * (limit / 9)) + 1; i > 0; i--) t += work();
-		var slot = Math.floor((seeds[round] / 4294967296) * 64);
-		out[slot] = out[slot] + t + (times[times.length] = +snap());
+		for(var i = ((loads[round] / 4294967296) * (limit / 9)) + 1; i > 0; i--) t = work();
+		var slot = counts-(round % counts)//Math.floor((seeds[round] / 4294967296) * counts)// round % counts; //;
+		out[slot] = +out[slot] + +t + snap();
 	  	if(progress) progress({value: round, max: roundLimit});
 		if(round < roundLimit) return setTimeout(next,0);
 	
 	  
 	  	var collect=[];
 		formatData(out.map(function(a, b, c) {
-			var l2 = ("000" + a).slice(-6);
-			return (l2[5]+l2[4]+l2[3] + l2[2] + l2[1] + l2[0]) || ""; // toss ~16/1000 chars
+			return ("000" + a).slice(-2);
 		}).filter(String).join("").replace(/\D+/g,""), format, collect);
 	  
 	  
