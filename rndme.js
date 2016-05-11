@@ -557,14 +557,19 @@ function stamp() {
 	return(Date.now() / (performance.now() * 100)).toString().split("").filter(/./.test, /\d/).slice(-10).join("");
 };
   
-  
+function combine(r1, r2){
+   var i=0, mx=Math.min(r1.length, r2.length), out=Array(mx);
+   for(i;i<mx;i++) out[i] = String(+r1[i]+ +r2[i]).slice(-1);
+  return out.join("");
+}
+
   
   
 //publish utils:
 rndme.munge=munge;  
 rndme.spin= spin;
 rndme.stamp= stamp;
-  
+rndme.combine=combine;  
     
 function make(method) {
 	var func = rndme[method];
