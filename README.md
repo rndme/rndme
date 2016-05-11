@@ -33,6 +33,12 @@ Time uses  a high-resolution clock and a random workload to gather numbers. Sinc
 Crypto uses `crypto.getRandomValues` _and_ a high-resolution clock derivative to gather numbers. This method is sync under-the-hood and is directly callable. OS-provided numbers are muliplied by a number derived from the date and a high-resolution performance timing API, then cropped in the middle to deliver un-compromised randomness. The crypto source's exact performance rate depends on CPU speed and OS-provided entropy, but easily execeds 150 chars per ms.
 
 
+
+### Combo
+Combo mixes output from one or more sources, like sound and motion, to ensure randomness in the face of broken sensors, or just for plain good measure. It's an easy way to address concerns about one source or the other: use both! All data is gathered at the same time, so you only have to wait the time of the slowest source used. `rndme.combo` takes a special first argument, a list of source names, but the other parameters are the same except `progress`, which is not available on combo.
+
+
+
 ## Output Formats
 
 | Format | Seperator | Range | Description |
@@ -56,7 +62,9 @@ rndme.sound("bytes", 12345, function(s){alert(s)});
 rndme.motion("hex", 1024,function(s){alert(s)}, console.info.bind(console));
 rndme.time("float", 256,function(s){alert(s)}, console.info.bind(console));
 rndme.video("base92", 1024).then(alert).catch(confirm);
-alert(rndme.crypto("int", 1024, Boolean)); // the crypto source can be sync with a stub callback
+rndme.combo(["sound", "video", "motion"], "hex", 2000).then(alert); // combine 3 sources
+rndme.combo("video", "hex", 2000, alert); // combine once source (alt syntax + cb)
+
 ```
 
 
@@ -64,22 +72,29 @@ alert(rndme.crypto("int", 1024, Boolean)); // the crypto source can be sync with
 
 ## Static Utilities
 
-`.stamp()` - returns 10 random digits, sync, based on the current time. Using Date()s and high-resolution timingings with a chunk of slower code internally, this method should produce different output each time it's called:
+`._stamp()` - returns 10 random digits, sync, based on the current time. Using Date()s and high-resolution timingings with a chunk of slower code internally, this method should produce different output each time it's called:
 ```js
-[1,2,3,4,5].map(rndme.stamp);
+[1,2,3,4,5].map(rndme._stamp);
 // == ["1621049878", "7138172444", "5275617627", "1540339147", "2792212006"]
 ```
 
-`.spin(arrToShuffle, optNumSwaps)` - re-arranges the elements in an array into an unpredictable order bu swapping values. The default is as many swaps as elements, but a 2nd argument can specify a custom number of swaps if desired. Uses `Math.random()`, so it should not be a primary source of sectrets, but it can help re-arrange secrets to provide a better distribution.
+`._spin(arrToShuffle, optNumSwaps)` - re-arranges the elements in an array into an unpredictable order bu swapping values. The default is as many swaps as elements, but a 2nd argument can specify a custom number of swaps if desired. Uses `Math.random()`, so it should not be a primary source of sectrets, but it can help re-arrange secrets to provide a better distribution.
 ```js
-rndme.spin([1,2,3,4,5,6,7,8,9]);
+rndme._spin([1,2,3,4,5,6,7,8,9]);
 // ~==[5, 2, 8, 9, 6, 3, 1, 7, 4] // note complete re-distribution of element order
 ```
 
-`.munge` - An `[].sort()` callback that contrary to popular belief, does NOT randomize an array. It does slightly re-arrange the elements, and it does so quickly. It's used by _rndme_ to prevent repeated output in very low-entroy situations like a user having a broken camera and using the video input by altering the look up table of some output builders prior to each execution.
+`._munge` - An `[].sort()` callback that contrary to popular belief, does NOT randomize an array. It does slightly re-arrange the elements, and it does so quickly. It's used by _rndme_ to prevent repeated output in very low-entroy situations like a user having a broken camera and using the video input by altering the look up table of some output builders prior to each execution.
 ```js
-[1,2,3,4,5,6,7,8,9].sort(rndme.munge);
+[1,2,3,4,5,6,7,8,9].sort(rndme._munge);
 // ~== [2, 1, 8, 3, 7, 4, 5, 6, 9]; // note different order, but not complete re-distribution
+```
+
+
+`._combine(inp1, inp2)` - Given two strings or arrays of digits, add them together as numbers and keep the least significant digits. This is used internaly by the combo source, but is exposed for mixing other data/entropy as needed.
+```js
+rndme._combine("123","789");
+// == "802"  (1+7=8, 2+8=0, 3+9=2)
 ```
 
 
