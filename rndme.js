@@ -450,7 +450,7 @@ function getRandomFromMath(format, chars, callback, progress) {
 
 
 
-rndme.combo = function combo (sources, format, samples) {
+rndme.combo = function combo (sources, format, samples, cb) {
 	if(!Array.isArray(sources)) sources = [sources];
 	sources = sources.map(function(a) {
 		return rndme[a]("int", samples);
@@ -459,7 +459,9 @@ rndme.combo = function combo (sources, format, samples) {
 	return Promise.all(sources).then(function(out) {
 		var collect = [];
 		formatData(out.reduce(rndme._combine), format, collect);
-		return collect.slice(-samples).join("");
+		collect = collect.slice(-samples).join("")
+		if(cb) cb(collect);
+		return collect;
 	});
 };//end combo()
 
