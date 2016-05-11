@@ -63,7 +63,7 @@ rndme.motion("hex", 1024,function(s){alert(s)}, console.info.bind(console));
 rndme.time("float", 256,function(s){alert(s)}, console.info.bind(console));
 rndme.video("base92", 1024).then(alert).catch(confirm);
 rndme.combo(["sound", "video", "motion"], "hex", 2000).then(alert); // combine 3 sources
-rndme.combo("video", "hex", 2000, alert); // combine once source (alt syntax + cb)
+rndme.combo("video", "hex", 2000, alert); // combine one source (alt syntax + cb)
 
 ```
 
