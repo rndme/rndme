@@ -144,7 +144,7 @@ function getRandomFromTime(format, chars, callback, progress) {
 		counts=Math.ceil(chars/2),
 		ds=(Date.now()+performance.now()).toString().replace(/\D/g,""),
 		dsl=ds.length, 
-		out =random(counts),// Array.from(Array(counts)).map(function(a,b){return rndme.stamp().slice(b%10, (b%10)+1)*b}),
+		out =random(counts),// Array.from(Array(counts)).map(function(a,b){return rndme._stamp().slice(b%10, (b%10)+1)*b}),
 	//.map((a,b)=>b*ds[b%dsl]),//random(counts),
 		rxd = /[523403467]/,
 		limit = 0,
@@ -415,7 +415,7 @@ rndme.crypto=  getRandomFromCrypto;
 // crypto - OS-provided CSPRNG with timing data mixin - sync and fast
 function getRandomFromCrypto(format, chars, callback, progress) { 
 	chars=Math.floor(chars/1.5);
-	var pad=(""+Array(Math.floor(chars/9.75))).split("").map(rndme.stamp),
+	var pad=(""+Array(Math.floor(chars/9.75))).split("").map(rndme._stamp),
 	out =  [].slice.call(crypto.getRandomValues(new Int8Array(chars)))
 	.map(Math.abs)
 	.filter(function(a,b,c){ return a<100; });
@@ -450,7 +450,18 @@ function getRandomFromMath(format, chars, callback, progress) {
 
 
 
+rndme.combo = function combo (sources, format, samples) {
+	if(!Array.isArray(sources)) sources = [sources];
+	sources = sources.map(function(a) {
+		return rndme[a]("int", samples);
+	});
 
+	return Promise.all(sources).then(function(out) {
+		var collect = [];
+		formatData(out.reduce(rndme._combine), format, collect);
+		return collect.slice(-samples).join("");
+	});
+};//end combo()
 
 
 
@@ -566,10 +577,12 @@ function combine(r1, r2){
   
   
 //publish utils:
-rndme.munge=munge;  
-rndme.spin= spin;
-rndme.stamp= stamp;
-rndme.combine=combine;  
+rndme._munge=munge;  
+rndme._spin= spin;
+rndme._stamp= stamp;
+rndme._combine=combine;  
+
+
     
 function make(method) {
 	var func = rndme[method];
@@ -609,7 +622,6 @@ function make(method) {
 ["sound","motion","time","video","crypto","unsafe"].forEach(make);
   
 
-  
   
 // return static class:
  return rndme;
