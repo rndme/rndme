@@ -72,25 +72,29 @@ rndme.combo("video", "hex", 2000, alert); // combine one source (alt syntax + cb
 
 ## Static Utilities
 
+
+### stamp
 `._stamp()` - returns 10 random digits, sync, based on the current time. Using Date()s and high-resolution timingings with a chunk of slower code internally, this method should produce different output each time it's called:
 ```js
 [1,2,3,4,5].map(rndme._stamp);
 // == ["1621049878", "7138172444", "5275617627", "1540339147", "2792212006"]
 ```
 
+### spin
 `._spin(arrToShuffle, optNumSwaps)` - re-arranges the elements in an array into an unpredictable order bu swapping values. The default is as many swaps as elements, but a 2nd argument can specify a custom number of swaps if desired. Uses `Math.random()`, so it should not be a primary source of sectrets, but it can help re-arrange secrets to provide a better distribution.
 ```js
 rndme._spin([1,2,3,4,5,6,7,8,9]);
 // ~==[5, 2, 8, 9, 6, 3, 1, 7, 4] // note complete re-distribution of element order
 ```
 
+### munge
 `._munge` - An `[].sort()` callback that contrary to popular belief, does NOT randomize an array. It does slightly re-arrange the elements, and it does so quickly. It's used by _rndme_ to prevent repeated output in very low-entroy situations like a user having a broken camera and using the video input by altering the look up table of some output builders prior to each execution.
 ```js
 [1,2,3,4,5,6,7,8,9].sort(rndme._munge);
 // ~== [2, 1, 8, 3, 7, 4, 5, 6, 9]; // note different order, but not complete re-distribution
 ```
 
-
+### combine
 `._combine(inp1, inp2)` - Given two strings or arrays of digits, add them together as numbers and keep the least significant digits. This is used internaly by the combo source, but is exposed for mixing other data/entropy as needed.
 ```js
 rndme._combine("123","789");
