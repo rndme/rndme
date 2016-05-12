@@ -256,7 +256,7 @@ function sound(mode, length, callback, progress, err) {
 		gotStream.ip = inputPoint;
 		gotStream.ai = audioInput;
 
-		var node = (inputPoint.context.createScriptProcessor || inputPoint.context.createJavaScriptNode).call(inputPoint.context, 4096, 1, 1);
+		var node = (inputPoint.context.createScriptProcessor || inputPoint.context.createJavaScriptNode).call(inputPoint.context, 2048, 1, 1);
 		audioInput.connect(node);
 		node.connect(audioInput.context.destination); //this should not be necessary
 		node.onaudioprocess = function(e) {
@@ -277,11 +277,11 @@ function sound(mode, length, callback, progress, err) {
 			
 				getMyBuffers(buffers);
 				isRecording = false;
-			}, Math.floor(length/70) );
+			}, 100 );
 		}
 	  
-		TIMER = setInterval(rec, Math.floor(length/32) );
-	  	rec();
+		TIMER = setInterval(rec, 160 );
+	  	setTimeout(rec,0);
 	}
 
 
@@ -310,10 +310,7 @@ function sound(mode, length, callback, progress, err) {
 			}
 		  
 			s = x.join("");
-
 			count+=formatData(s, format, ALLS);
-
-		
 		  
 			if(count > limit) {
 				if(format === "raw" && buffers[ind + 1]) return false;
@@ -517,7 +514,7 @@ function formatData(strData, format, dest){
 		break;
 
 	  case 'raw':
-		count += s.length;
+		count += String(s).length;
 		dest.push(s);
 		break;
 
