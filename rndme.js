@@ -361,9 +361,7 @@ function sound(mode, length, callback, progress, err) {
   
   
   
-// sound - capture unpredictable data from user microphone
-
-
+// motion - capture unpredictable data from user movement and sensor noise
 rndme.motion = getRandomMotion;
 
 function getRandomMotion(format, chars, callback, progress, err) { // returns a long string of digits to callback
@@ -374,25 +372,33 @@ function getRandomMotion(format, chars, callback, progress, err) { // returns a 
   	
 	var samples = {},
 		rounds=0,
-	 lastPos = [0,0,0];
+		pad=random(~~(chars/19)).map(function(a){return 1/a;}),
+	 	lastPos = [0,0,0];
   
+  	function random(n) {return [].slice.call(crypto.getRandomValues(new Uint16Array(n)));}
+
+
   
 	function accelChange(e) {
-		var acc = e.accelerationIncludingGravity || "";
-			var pos = [acc.x || e.alpha||0, acc.y||e.beta||0, acc.z||e.gamma||0];
-			var dif = [pos[0] - lastPos[0], pos[1] - lastPos[1], pos[2] - lastPos[2]];
-	  		if(!pos[0]||!pos[1]) return;
-			samples[dif[0]]=1;
-	  		samples[dif[1]]=1;
-	  		samples[dif[2]]=1;
-	  	  	samples[pos[0].toString().slice(-8,-2)]=1;
-	  	  	samples[pos[1].toString().slice(-8,-2)]=1;
-	  	  	samples[pos[2].toString().slice(-8,-2)]=1;
+		var acc = e.accelerationIncludingGravity || "",
+	  		off=pad[rounds] || 0,
+			buff,
+			pos = [acc.x || e.alpha||0, acc.y||e.beta||0, acc.z||e.gamma||0],
+			dif = [pos[0] - lastPos[0]-off, pos[1] - lastPos[1]-off, pos[2] - lastPos[2]-off];
+  
+			samples[dif[0].toString().slice(-9,-1)]=1;
+	  		samples[dif[1].toString().slice(-9,-1)]=1;
+	  		samples[dif[2].toString().slice(-9,-1)]=1;
+	  		samples[(dif[0]+dif[1]+dif[2]).toString().slice(-9,-1)]=1;
+	  		samples[(dif[1]-dif[2]-off).toString().slice(-9,-1)]=1;
+	   		samples[((dif[2]-dif[0])/(off/7)).toString().slice(-9,-1)]=1;
+	  
 	  		rounds++;
 			lastPos = pos;
-			var buff=Object.keys(samples);
-	  		if ( (buff.length*11) > chars) done( buff );
-	  		if(progress) progress({value:buff.length, max: buff.length*18})
+			buff=Object.keys(samples);
+	  		if(progress) progress({value:buff.length, max: buff.length*8})
+	  		if ( (buff.length*7.95) > chars) done( buff );
+	  		
 	}
 
  
@@ -400,11 +406,12 @@ function getRandomMotion(format, chars, callback, progress, err) { // returns a 
 	  	samples=null;
 		window.removeEventListener('devicemotion', accelChange, false);
 	    window.removeEventListener('deviceorientation', accelChange, false);
-	    var out=String(spin(data)).replace(/\-?0\.00*/g, "").replace(/\D+/g,"")//;
-		//callback(out);
-	  	var collect=[];
+	    var out=String(data).replace(/\-?0\.00*/g, "").replace(/\D+/g,""),
+	  	collect=[];
+	  	
 	  	formatData(out, format, collect);
 	  	callback(collect.slice(-chars).join());
+	  	if(progress) progress({value:0, max: 1});
 	}
 
 	window.addEventListener('devicemotion', accelChange, false);
@@ -413,6 +420,9 @@ function getRandomMotion(format, chars, callback, progress, err) { // returns a 
   
 }//end getRandomMotion()
 
+  
+  
+  
 
 rndme.crypto=  getRandomFromCrypto;
 // crypto - OS-provided CSPRNG with timing data mixin - sync and fast
