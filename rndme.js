@@ -1,4 +1,4 @@
-	// rndme.js - unpredictable number generation from sound, sight, movement, and time
+// rndme.js - unpredictable number generation from sound, sight, movement, and time
 (function(a,b){"function"==typeof define&&define.amd?define([],a):"object"==typeof exports?module.exports=a():b.rndme=a()}(function(){
 
 /* example uses:
@@ -271,14 +271,17 @@ function sound(mode, length, callback, progress, err) {
 		inputPoint.connect(zg);
 		zg.connect(audioContext.destination);
 	  
-		TIMER = setInterval(function() {
+	  function rec() {
 			isRecording = true;
 			setTimeout(function() {
 			
 				getMyBuffers(buffers);
 				isRecording = false;
-			}, 260);
-		}, 1000);
+			}, Math.floor(length/70) );
+		}
+	  
+		TIMER = setInterval(rec, Math.floor(length/32) );
+	  	rec();
 	}
 
 
