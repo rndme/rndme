@@ -14,15 +14,15 @@ Cryptography needs un-predictable keys to ensure security. Recent revelations ha
 
 ## Input Sources
 ### Sound
-Uses `getUserMedia()` to capture numbers from a microphone. This is the fastest physical source of numbers at over 100 chars per ms. The raw samples are not only shuffled, they are cropped of the most and least signifigant digits, so there's no telling what was briefly "recorded". Use medium volume music or static for a more even distribution of output.
+Uses `getUserMedia()` to capture numbers from a microphone. This is the fastest physical source of numbers at over 900 chars per ms sustained. The raw samples are not only shuffled, they are cropped of the most and least signifigant digits, so there's no telling what was briefly "recorded". Use medium volume music or static for a more even distribution of output.
 
 
 ### Video
-Uses `getUserMedia()` to capture numbers from a camera. Thousands of pixels are rolled into each character of output. Move the camera around and have some color contrast in the video for maximum entropy. Video is the 2nd fastest source of numbers after sound at around 3-20 chars per ms, depending on brightness. Even a dark camera will work, but one shooting the floor or horizon will produce data much faster.
+Uses `getUserMedia()` to capture numbers from a camera. Thousands of pixels are rolled into each character of output. Move the camera around and have some color contrast in the video for maximum entropy. Video is the 2nd fastest source of numbers after sound at around 3 - 80 chars per ms, depending on brightness and movement. Even a dark camera will work, but one shooting the floor or horizon will produce data much faster.
 
 
 ### Motion
-Motion uses the device Motion API to turn physical movements into numbers. It shuffles the samples and chops off bits to ensure privacy in the face of low-resolution sensors and motionless capture. Best entropy is obtained with lots of movement starting and stopping, like gently shaking while tilting. Motion's performance varies based on how much unique movement is performed from about 0.3 - 3 chars per ms, depending on movement.
+Motion uses the device Motion API to turn physical movements into numbers. It shuffles the samples and chops off bits to ensure privacy in the face of low-resolution sensors and motionless capture. Best entropy is obtained with lots of movement starting and stopping, like gently shaking while tilting. Motion's performance varies per device but ranges from about 2.5 - 5 chars per ms.
 
 
 ### Time
@@ -30,7 +30,7 @@ Time uses  a high-resolution clock and a random workload to gather numbers. Sinc
 
 
 ### Crypto
-Crypto uses `crypto.getRandomValues` _and_ a high-resolution clock derivative to gather numbers. This method is sync under-the-hood and is directly callable. OS-provided numbers are muliplied by a number derived from the date and a high-resolution performance timing API, then cropped in the middle to deliver un-compromised randomness. The crypto source's exact performance rate depends on CPU speed and OS-provided entropy, but easily execeds 150 chars per ms.
+Crypto uses `crypto.getRandomValues` _and_ a high-resolution clock derivative to gather numbers. This method is sync under-the-hood and is directly callable. OS-provided numbers are muliplied by a number derived from the date and a high-resolution performance timing API, then cropped in the middle to deliver un-compromised randomness. The crypto source's exact performance rate depends on CPU speed and OS-provided entropy, but expect 100 - 500 chars per ms.
 
 
 
