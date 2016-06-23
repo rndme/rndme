@@ -45,6 +45,7 @@ Combo mixes output from one or more sources, like sound and motion, to ensure ra
 |----|:----:|:----:|----|
 | hex | `""` | `0-F` | hex-encoded byte values  |
 | bytes | `","` | `0-255` |  integers that fit into 1 byte  |
+| bin | `""` | `\u0-\u255` |  binary string of bytes |
 | int | `""` | `0-9` | continuous digits  |
 | base64 | `""` | `\--z` | URL-safe chars |
 | base92 | `""` | `\t-~` | JSON-safe chars  |
