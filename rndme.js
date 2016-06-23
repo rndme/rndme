@@ -505,9 +505,18 @@ function formatData(strData, format, dest){
 		  count++;
 		  rr[i]= ~~ ((tr[i] / 999) * 255);
 		}
-		dest.push(rr+'');				
+		dest.push(rr);				
 		break;
-
+		
+	  case 'bin':
+		var tr=(s.match(rxd3) || []), i=0, mx=tr.length, rr=Array(mx);
+		for(;i<mx;i++){
+		  count++;
+		  rr[i]= ~~ ((tr[i] / 999) * 255);
+		}
+		dest.push(String.fromCharCode.apply(String,rr));				
+		break;
+		
 	  case 'int':
 		dest.push(s.replace(rxd, "") || "");
 		count = dest.join("").length;
@@ -605,6 +614,7 @@ function make(method) {
 		size = {
 			'float': size * 16,
 			hex: one5,
+		  	bin: size * 3,
 			base64: three,
 			bytes: three,
 			base92: size * 2.2
@@ -614,6 +624,7 @@ function make(method) {
 			var u, delim = {
 				float: ',',
 				bytes: ',',
+			  	bin: '',
 				base92: '',
 				int: '',
 			    hex: '',
@@ -630,7 +641,7 @@ function make(method) {
 	} //end _rnd()
 } //end make
 
-
+// make interfaces for each source:
 ["sound","motion","time","video","crypto","unsafe"].forEach(make);
   
 
