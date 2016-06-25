@@ -228,7 +228,7 @@ function sound(mode, length, callback, progress, err) {
 
 		var resp = gum.call(n, {
 			"audio": {
-				volume: 0.7,
+				volume: 0.75,
 				channelCount: 1,
 				echoCancellation: false,
 				"mandatory": {
@@ -301,11 +301,12 @@ function sound(mode, length, callback, progress, err) {
 				max: limit
 			});
 
-			if(!r || !r.map) return err("getMyBuffers passed non buffer");
-
-			for(var i = 0, mx = r.length; i < mx; i++) {
-				var a = r[i],
-					u = ("" + a).replace(rxd, "").slice(-11, - 3);
+			if(!r || !Array.isArray(r)) return err("getMyBuffers passed non buffer");
+			
+		  	r.reverse().sort(munge);
+		  
+			for(var i = +(""+performance.now()).split(".")[1].slice(0,2), mx = r.length; i < mx; i++) {
+				var u = ("" + r[i]).slice(-10, -1);
 				if(+u) x.push(u);
 			}
 		  
