@@ -103,6 +103,62 @@ rndme._combine("123","789");
 ```
 
 
+### test results on 50,000 bin samples
+
+tested using http://fourmilab.ch/random/ 's `ent.exe` program on windows
+
+#### audio
+```
+Entropy = 7.986279 bits per byte.
+Optimum compression would reduce the size of this 50000 byte file by 0 percent.
+
+Chi square distribution for 50000 samples is 903.65, and randomly would exceed this value less than 0.01 percent of the times.
+
+Arithmetic mean value of data bytes is 127.3347 (127.5 = random).
+Monte Carlo value for Pi is 3.139325573 (error 0.07 percent).
+Serial correlation coefficient is -0.004064 (totally uncorrelated = 0.0).
+```
+
+#### video (w/camera obscured, no motion)
+
+```
+Entropy = 7.990584 bits per byte.
+Optimum compression would reduce the size of this 50000 byte file by 0 percent.
+
+Chi square distribution for 50000 samples is 589.68, and randomly would exceed this value less than 0.01 percent of the times.
+
+Arithmetic mean value of data bytes is 127.6303 (127.5 = random).
+Monte Carlo value for Pi is 3.142205688 (error 0.02 percent).
+Serial correlation coefficient is -0.000538 (totally uncorrelated = 0.0).
+```
+
+
+#### crypto
+
+```
+Entropy = 7.980536 bits per byte.
+Optimum compression would reduce the size of this 49895 byte file by 0 percent.
+
+Chi square distribution for 49895 samples is 1118.04, and randomly would exceed this value less than 0.01 percent of the times.
+
+Arithmetic mean value of data bytes is 127.7410 (127.5 = random).
+Monte Carlo value for Pi is 3.151413109 (error 0.31 percent).
+Serial correlation coefficient is -0.012716 (totally uncorrelated = 0.0).
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
