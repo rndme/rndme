@@ -67,7 +67,7 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 	function dumpCanvas() {
 		var data = ctx.getImageData(0, 0, W, H).data,
 		pSum=data.slice(0, 512).reduce(function(a,b){return a+b;}, 10),	  
-		sigLength = Math.floor(Math.max(64,Math.min(2048, (pSum-32768)/9))),
+		sigLength = Math.floor(Math.max(196,Math.min(4096, (pSum-32768)/6))),
 		sig = crypto.getRandomValues(new Uint32Array(sigLength)),
 			r = [],
 			taken = 0;
@@ -75,17 +75,13 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 	  if( pSum < 100 ) return setTimeout(updateCanvas, 20);
 	  
 		
-		for(var i = 1, mx = data.length; i < mx; i++) {
-			var v = data[i];
-			if( v < 255) {
-				sig[(sigLength-1)-(taken++ % sigLength)]+=v;
-			}
+		for(var i = +(""+pSum).slice(-3), base = sigLength - 1, mx = data.length; i < mx; i++) {
+			sig[base-(taken++ % sigLength)]+= data[i];
 		}
-
+	  
 		//keygen and dump:
-		sig = [].slice.call(sig).map(function(a) {
+		sig = [].map.call(sig, function(a) {
 			return ("00"+a).slice(-2);
-			  //parseInt("0" + a.toString(2).slice(-10), 2);
 		}).join("");
 
 	  	if(/^0+$/.test(sig)) return setTimeout(updateCanvas, 20);
@@ -141,46 +137,37 @@ rndme.time = getRandomFromTime;
 function getRandomFromTime(format, chars, callback, progress) { 
 
 	var ua = new Uint32Array(1),
-		counts=Math.ceil(chars/2),
+		counts=Math.ceil(chars/9.99),
 		ds=(Date.now()+performance.now()).toString().replace(/\D/g,""),
 		dsl=ds.length, 
-		out =random(counts),// Array.from(Array(counts)).map(function(a,b){return rndme._stamp().slice(b%10, (b%10)+1)*b}),
-	//.map((a,b)=>b*ds[b%dsl]),//random(counts),
+		out = Array.from(Array(counts)).map(rndme._stamp).map(Number),
 		rxd = /[523403467]/,
 		limit = 0,
 		round = 0,
-		roundLimit = chars * 0.333, //0.7,
-		seeds = random(roundLimit + 3),
-		loads = random(roundLimit + 3),
 		r = [],
 		t = (Date.now().toString().slice(-3).slice(1)*1),
-		st = performance.now();
-		
-
-	function random(n) {return [].slice.call(crypto.getRandomValues(new Uint32Array(n)));}
+		st = performance.now(),		
+		intArr=new Uint8Array(1), 
+		intArr2=new Uint16Array(1);
 	function work() {return Math.random().toString(16).split("").filter(rxd.test, rxd).length;}
-	function snap() {return +String(("" + performance.now()).match(/\.\d\d/) || "0").replace(/\D/g, "").slice(-2).split("").reverse().join("") || 0;}
-
 
 	while(performance.now() < st + 1) t += work(limit++) ;
-	limit = Math.max(limit*1.75, 2);
-
+	limit = Math.max(limit/2, 2);
+  
 	function next(){
-	
-		round++;
-		for(var i = ((loads[round] / 4294967296) * (limit / 9)) + 1; i > 0; i--) t = work();
-		var slot = counts-(round % counts)//Math.floor((seeds[round] / 4294967296) * counts)// round % counts; //;
-		out[slot] = +out[slot] + +t + snap();
-	  	if(progress) progress({value: round, max: roundLimit});
-		if(round < roundLimit) return setTimeout(next,0);
-	
+	 	for(var i = (crypto.getRandomValues(intArr)[0]/256)*limit; i > 0; i--) t = work();
+		out[round++]= out[round] + (+rndme._stamp() || 0) + crypto.getRandomValues(intArr2)[0];
+	  	if( !(round % 100) && progress) progress({value: round, max: counts});
+		if(round < counts){
+		  if( (round % 10) ) return next();
+		  return setTimeout(next,0);
+		}
 	  
 	  	var collect=[];
 		formatData(out.map(function(a, b, c) {
-			return ("000" + a).slice(-2);
+			return ("00000000000" + a).slice(-10);
 		}).filter(String).join("").replace(/\D+/g,""), format, collect);
-	  
-	  
+		  
 		callback(collect.slice(-chars).join(""));
 
 	}//end next()
