@@ -622,7 +622,7 @@ function make(method) {
 			if (callback) callback(x);
 			return x;
 		};
-		if (callback) return func(format, size, cb2, progress, err || console.error.bind(console));
+		if (callback) return func(format, size, cb2, progress, err || console.warn.bind(console));
 		return new Promise(function(resolve, reject) {
 			func(format, size, resolve, null, reject);
 		}).then(cb2); //end promise
