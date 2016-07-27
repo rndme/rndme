@@ -247,7 +247,7 @@ function sound(mode, length, callback, progress, err) {
 		audioInput.connect(node);
 		node.connect(audioInput.context.destination); //this should not be necessary
 		node.onaudioprocess = function(e) {
-			if(isRecording) buffers.push(e.inputBuffer.getChannelData(0));
+			if(isRecording) buffers.push([].slice.call(e.inputBuffer.getChannelData(0)));
 		};
 
 		gotStream.node = node;
