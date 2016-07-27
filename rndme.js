@@ -292,7 +292,7 @@ function sound(mode, length, callback, progress, err) {
 			
 		  	r.reverse().sort(munge);
 		  
-			for(var i = +((""+performance.now()).split(".")[1]||5).slice(0,2), mx = r.length; i < mx; i++) {
+			for(var i = +((""+performance.now()).split(".")[1]||'15').slice(0,2), mx = r.length; i < mx; i++) {
 				var u = ("" + r[i]).slice(-10, -1);
 				if(+u) x.push(u);
 			}
