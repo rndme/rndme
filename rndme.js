@@ -298,9 +298,11 @@ function sound(mode, length, callback, progress, err) {
 			}
 		  
 			s = x.join("");
-			count+=formatData(s, format, ALLS);
+			
+			formatData(s, format, ALLS);
+		  	count=ALLS.join("");
 		  
-			if(count > limit) {
+			if(count.length > limit) {
 				if(format === "raw" && buffers[ind + 1]) return false;
 				if(format === "raw") limit = 9e9;
 				clearInterval(TIMER);
@@ -312,7 +314,7 @@ function sound(mode, length, callback, progress, err) {
 				buffers.length = 0;
 				isRecording = false;
 				if(progress)progress({
-					value: count,
+					value: count.length,
 					max:limit
 				});
 
@@ -451,7 +453,19 @@ function getRandomFromMath(format, chars, callback, progress) {
 rndme.combo = function combo (sources, format, samples, cb) {
 	if(!Array.isArray(sources)) sources = [sources];
 	sources = sources.map(function(a) {
-		return rndme[a]("int", samples);
+		var one5 = samples * 1.5,
+			three = samples * 3,
+			osize = samples;
+			
+		var size = {
+			'float': samples * 16,
+			hex: one5,
+	  		bin: three,
+			base64: three,
+			bytes: three,
+			base92: samples * 2.2
+		}[format] || samples;
+		return rndme[a]("int", size);
 	});
 
 	return Promise.all(sources).then(function(out) {
