@@ -416,10 +416,12 @@ rndme.crypto=  getRandomFromCrypto;
 function getRandomFromCrypto(format, chars, callback, progress) { 
 	chars=Math.floor(chars/1.5);
 	var pad=(""+Array(Math.floor(chars/9.75))).split("").map(rndme._stamp),
-	out =  [].slice.call(crypto.getRandomValues(new Int8Array(chars)))
-	.map(Math.abs)
-	.filter(function(a,b,c){ return a<100; });
-	out = out.map(function(a,b,c){
+	out = [],
+	blk = 64 * 1024;
+	for(var i=chars; i>0; i-=blk)[].push.apply(out, crypto.getRandomValues(new Int8Array(Math.min(blk, i)))) ;  
+	out = out.map(Math.abs)
+	.filter(function(a,b,c){ return a<100; })
+	.map(function(a,b,c){
              var padSlot=Math.floor(b/10), padCol=b%10;
              return ("00"+(a+(+pad[padSlot][padCol]||1)).toString().slice(-2)).slice(-2);
         }).join("");
