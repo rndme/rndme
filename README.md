@@ -5,6 +5,8 @@ unpredictable number generation
 
 Check out [a live demo](https://pagedemos.com/rndmelibdemo/) to see what the fuss is about.
 
+Also drives my [bulk-random file generator](http://pagedemos.com/random_files/)
+
 ## Purpose
 
 > Easily gather numbers or text from sound, movement, video, and more.
