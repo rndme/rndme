@@ -108,20 +108,14 @@ function getRandomFromVideo(format, chars, callback, progress, err) { // returns
 		setTimeout(dumpCanvas, 25);
 	}
 
-
 	function success(stream) {
 		updateCanvas.stop = function() {
 			stream.getTracks()[0].stop();
 		};
-
-		if(webkit) v.src = window.webkitURL.createObjectURL(stream);
-		else if(moz) {
-			v.mozSrcObject = stream;
-			v.play();
-		} else v.src = stream;
+		v.src = window.URL.createObjectURL(stream);
 		setTimeout(updateCanvas, 9);
 	}
-
+	
 }  //end getRandomFromVideo()
 
 
@@ -218,14 +212,14 @@ function sound(mode, length, callback, progress, err) {
 				volume: 0.75,
 				channelCount: 1,
 				echoCancellation: false,
-				"mandatory": {
+				"xmandatory": {
 					"googEchoCancellation": "false",
 					"googAutoGainControl": "false",
 					"googNoiseSuppression": "false",
 					"googHighpassFilter": "false",
 
 				},
-				"optional": []
+				// "optional": []
 			},
 		}, gotStream, err)
 		  if(resp && resp.then) resp.then(gotStream);
